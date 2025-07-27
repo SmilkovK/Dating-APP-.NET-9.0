@@ -18,3 +18,9 @@ export type Photo = {
   memberId: string
 }
 
+export type EditableMember = {
+  displayName: string
+  descpription?: string
+  city: string
+  country: string
+}
