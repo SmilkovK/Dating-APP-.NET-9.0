@@ -31,7 +31,7 @@ export const routes: Routes = [
                     {path: '', redirectTo: 'profile', pathMatch: 'full'},
                     {path:'profile', component:MemberProfile, title: 'Profile', canDeactivate:[preventSaveChangesGuard]},
                     {path:'photos', component:MemberPhotos, title: 'Photos'},
-                    {path:'messeges', component:MemberMesseges, title: 'Messages'}
+                    {path:'messages', component:MemberMesseges, title: 'Messages'}
                 ]
             },
             { path: 'lists', component: Lists },
