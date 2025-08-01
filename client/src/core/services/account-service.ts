@@ -14,36 +14,66 @@ export class AccountService {
   currentUser = signal<User | null>(null);
   private baseURL = environment.apiUrl;
 
-  register(creds: RegisterCreds){
-    return this.http.post<User>(this.baseURL + 'account/register', creds).pipe(
+  register(creds: RegisterCreds) {
+    return this.http.post<User>(this.baseURL + 'account/register', creds, { withCredentials: true }).pipe(
       tap(user => {
-        if(user){
+        if (user) {
           this.setCurrentUser(user)
+          this.startTokenRefreshInterval();
         }
       })
     )
   }
 
-  login(creds: LoginCreds){
-    return this.http.post<User>(this.baseURL + 'account/login', creds).pipe(
+  login(creds: LoginCreds) {
+    return this.http.post<User>(this.baseURL + 'account/login', creds, { withCredentials: true }).pipe(
       tap(user => {
-        if(user){
+        if (user) {
           this.setCurrentUser(user)
+          this.startTokenRefreshInterval();
         }
       })
     )
   }
 
-  setCurrentUser(user: User){
-    localStorage.setItem('user', JSON.stringify(user))
+  refreshToken() {
+    return this.http.post<User>(this.baseURL + 'account/refresh-token', {}, { withCredentials: true })
+  }
+
+  startTokenRefreshInterval() {
+    setInterval(() => {
+      this.http.post<User>(this.baseURL + 'account/refresh-token', {}, { withCredentials: true }).subscribe({
+        next: user => {
+          if (user) {
+            this.setCurrentUser(user);
+          } else {
+            this.logout();
+          }
+        },
+        error: () => {
+          this.logout();
+        }
+      });
+    }, 5 * 60 * 1000);
+  }
+
+
+  setCurrentUser(user: User) {
+    user.roles = this.getRolesFromToken(user)
     this.currentUser.set(user);
     this.likeService.getLikesIds();
   }
 
-  logout(){
-    localStorage.removeItem('user');
+  logout() {
     localStorage.removeItem('filters');
     this.likeService.clearLikeIds();
     this.currentUser.set(null);
+  }
+
+  private getRolesFromToken(user: User): string[] {
+    const payload = user.token.split(".")[1]
+    const decoded = atob(payload);
+    const jsonPayload = JSON.parse(decoded)
+    return Array.isArray(jsonPayload.role) ? jsonPayload.role : [jsonPayload.role]
   }
 }
