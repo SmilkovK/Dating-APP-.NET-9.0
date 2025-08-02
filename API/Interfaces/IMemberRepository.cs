@@ -7,7 +7,6 @@ namespace API.Interfaces;
 public interface IMemberRepository
 {
     void Update(Member member);
-    Task<bool> SaveALLAsync();
     Task<PaginationResult<Member>> GetMembersAsync(MemberParams memberParams);
     Task<Member?> GetMemerByIdAsync(string id);
     Task<IReadOnlyList<Photo>> GetPhotoForMemberAsync(string memberId);

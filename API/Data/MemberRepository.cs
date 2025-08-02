@@ -52,11 +52,6 @@ public class MemberRepository(AppDbContext context) : IMemberRepository
         .SelectMany(x => x.Photos).ToListAsync();
     }
 
-    public async Task<bool> SaveALLAsync()
-    {
-        return await context.SaveChangesAsync() > 0;
-    }
-
     public void Update(Member member)
     {
         context.Entry(member).State = EntityState.Modified;

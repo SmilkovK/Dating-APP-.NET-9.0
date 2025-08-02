@@ -5,7 +5,7 @@ import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { LikesService } from './likes-service';
 import { PresenceService } from './presence-service';
-import { HubConnection, HubConnectionState } from '@microsoft/signalr';
+import { HubConnectionState } from '@microsoft/signalr';
 
 @Injectable({
   providedIn: 'root'
@@ -47,7 +47,7 @@ export class AccountService {
     setInterval(() => {
       this.http.post<User>(this.baseURL + 'account/refresh-token', {}, { withCredentials: true }).subscribe({
         next: user => {
-            this.setCurrentUser(user);
+          this.setCurrentUser(user);
         },
         error: () => {
           this.logout();
@@ -61,16 +61,20 @@ export class AccountService {
     user.roles = this.getRolesFromToken(user)
     this.currentUser.set(user);
     this.likeService.getLikesIds();
-    if(this.presenceService.hubConnection?.state !== HubConnectionState.Connected){
+    if (this.presenceService.hubConnection?.state !== HubConnectionState.Connected) {
       this.presenceService.createHubConnection(user)
     }
   }
 
   logout() {
-    localStorage.removeItem('filters');
-    this.likeService.clearLikeIds();
-    this.currentUser.set(null);
-    this.presenceService.stopHubConnection();
+    this.http.post(this.baseURL + 'account/logout', {}, { withCredentials: true }).subscribe({
+      next: () => {
+        localStorage.removeItem('filters');
+        this.likeService.clearLikeIds();
+        this.currentUser.set(null);
+        this.presenceService.stopHubConnection();
+      }
+    })
   }
 
   private getRolesFromToken(user: User): string[] {
