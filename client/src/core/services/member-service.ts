@@ -4,7 +4,6 @@ import { environment } from '../../environments/environment';
 import { EditableMember, Member, MemberParams, Photo } from '../../types/member';
 import { tap } from 'rxjs';
 import { PaginatedResult } from '../../types/pagination';
-import { Message } from '../../types/message';
 
 
 @Injectable({
@@ -60,9 +59,5 @@ export class MemberService {
 
   deletePhoto(photoId: number){
     return this.http.delete(this.baseURL + 'members/delete-photo/' + photoId)
-  }
-
-  sendMessage(recipientId: string, content: string){
-    return this.http.post<Message>(this.baseURL + 'messages', {recipientId, content})
   }
 }
