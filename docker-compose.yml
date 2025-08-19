@@ -1,4 +1,15 @@
+version: '3.8'
+
 services:
+  datingapp:
+    build: .
+    ports:
+      - "5000:80"
+    depends_on:
+      - sql
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=sql;Database=datingdb;User Id=sa;Password=Password@1;TrustServerCertificate=True;"
+
   sql:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: sql
