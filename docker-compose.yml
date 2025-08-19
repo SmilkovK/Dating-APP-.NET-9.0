@@ -9,6 +9,7 @@ services:
       - sql
     environment:
       ConnectionStrings__DefaultConnection: "Server=sql;Database=datingdb;User Id=sa;Password=Password@1;TrustServerCertificate=True;"
+      TokenKey: "Super secret unguesable secret key Super secret unguesable secret key Super secret unguesable secret key Super secret unguesable secret key"
 
   sql:
     image: mcr.microsoft.com/mssql/server:2022-latest
