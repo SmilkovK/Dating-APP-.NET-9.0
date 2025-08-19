@@ -10,6 +10,9 @@ services:
     environment:
       ConnectionStrings__DefaultConnection: "Server=sql;Database=datingdb;User Id=sa;Password=Password@1;TrustServerCertificate=True;"
       TokenKey: "Super secret unguesable secret key Super secret unguesable secret key Super secret unguesable secret key Super secret unguesable secret key"
+      CloudinarySettings__CloudName: "duyhyhl0i"
+      CloudinarySettings__ApiKey: "713634394119584"
+      CloudinarySettings__ApiSecret: "lMz8nlNMejTfMuLfr0SOcmGlkc0"
 
   sql:
     image: mcr.microsoft.com/mssql/server:2022-latest
