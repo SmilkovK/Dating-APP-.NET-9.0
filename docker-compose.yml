@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   datingapp:
-    build: .
+    image: smilkov/datingapp:latest
     ports:
       - "5000:8080"
     depends_on:
