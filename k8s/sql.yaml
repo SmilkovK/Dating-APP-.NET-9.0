@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mssql
+  namespace: datingapp
+  labels:
+    app: mssql
+spec:
+  type: ClusterIP
+  ports:
+    - name: tds
+      port: 1433
+      targetPort: 1433
+  selector:
+    app: mssql
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mssql-headless
+  namespace: datingapp
+spec:
+  clusterIP: None
+  ports:
+    - name: tds
+      port: 1433
+      targetPort: 1433
+  selector:
+    app: mssql
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mssql
+  namespace: datingapp
+spec:
+  serviceName: mssql-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mssql
+  template:
+    metadata:
+      labels:
+        app: mssql
+    spec:
+      containers:
+        - name: mssql
+          image: mcr.microsoft.com/mssql/server:2022-latest
+          ports:
+            - containerPort: 1433
+              name: tds
+          env:
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: MSSQL_SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mssql-secrets
+                  key: SA_PASSWORD
+          volumeMounts:
+            - name: mssqldata
+              mountPath: /var/opt/mssql
+          readinessProbe:
+            tcpSocket:
+              port: 1433
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 1433
+            initialDelaySeconds: 30
+            periodSeconds: 10
+  volumeClaimTemplates:
+    - metadata:
+        name: mssqldata
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi
